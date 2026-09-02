@@ -49,8 +49,16 @@ class _FakeEnterpriseAiClient:
     def model_id(self) -> str:
         return "enterprise-nl2sql-model"
 
-    def generate(self, *, prompt: str, context: str, system_prompt: str) -> str:
-        del prompt, context, system_prompt
+    def generate(
+        self,
+        *,
+        prompt: str,
+        context: str,
+        system_prompt: str,
+        timeout_seconds: float | None = None,
+        max_output_tokens: int | None = None,
+    ) -> str:
+        del prompt, context, system_prompt, timeout_seconds, max_output_tokens
         return self.text
 
 
@@ -62,8 +70,17 @@ class _BlockingEnterpriseAiClient(_FakeEnterpriseAiClient):
         self.entered = threading.Event()
         self.release = threading.Event()
 
-    def generate(self, *, prompt: str, context: str, system_prompt: str) -> str:
+    def generate(
+        self,
+        *,
+        prompt: str,
+        context: str,
+        system_prompt: str,
+        timeout_seconds: float | None = None,
+        max_output_tokens: int | None = None,
+    ) -> str:
         self.entered.set()
+        del timeout_seconds, max_output_tokens
         assert self.release.wait(timeout=10), "テストが release しないまま timeout"
         return super().generate(prompt=prompt, context=context, system_prompt=system_prompt)
 
