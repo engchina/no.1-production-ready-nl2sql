@@ -203,7 +203,7 @@ def test_execute_route_scopes_non_admin_principal_to_allowed_profiles(
         ExecuteRequest(sql="SELECT ID FROM APP.ORDERS"),
         _request(_principal({"sales"})),  # type: ignore[arg-type]
     )
-    assert permitted.data.columns
+    assert permitted.data is not None and permitted.data.columns
 
 
 def test_execute_route_keeps_request_scope_for_admin_and_unauthenticated(
@@ -216,10 +216,10 @@ def test_execute_route_keeps_request_scope_for_admin_and_unauthenticated(
         ExecuteRequest(sql="SELECT ID FROM APP.SALARY"),
         _request(_principal(set(), admin=True)),  # type: ignore[arg-type]
     )
-    assert admin.data.columns
+    assert admin.data is not None and admin.data.columns
 
     unauthenticated = nl2sql_router.execute(
         ExecuteRequest(sql="SELECT ID FROM APP.SALARY"),
         _request(None),  # type: ignore[arg-type]
     )
-    assert unauthenticated.data.columns
+    assert unauthenticated.data is not None and unauthenticated.data.columns
