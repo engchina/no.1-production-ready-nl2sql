@@ -1200,9 +1200,7 @@ def test_list_profile_source_documents_returns_newest_first_with_legacy_role(
         ("qa-cases.csv", OntologySourceRole.QA)
     ]
     all_listed = service.list_profile_source_documents("sales", limit=10)
-    assert {
-        source.filename: source.source_role for source in all_listed
-    } == {
+    assert {source.filename: source.source_role for source in all_listed} == {
         "old-rules.md": OntologySourceRole.SOURCE,
         "qa-cases.csv": OntologySourceRole.QA,
     }

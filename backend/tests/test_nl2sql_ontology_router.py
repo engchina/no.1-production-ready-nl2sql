@@ -1314,10 +1314,7 @@ async def test_http_ontology_build_persists_current_form_inputs(
     }
     assert list_response.status_code == 200
     listed_sources = list_response.json()["data"]["source_documents"]
-    assert {
-        document["filename"]: document["source_role"]
-        for document in listed_sources
-    } == {
+    assert {document["filename"]: document["source_role"] for document in listed_sources} == {
         "rules.md": "source",
         "qa_cases.csv": "qa",
     }
