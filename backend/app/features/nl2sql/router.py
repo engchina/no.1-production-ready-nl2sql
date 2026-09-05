@@ -564,10 +564,8 @@ def search_profiles(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     # sort 指定ごとに並びが変わるため ETag にも含める。
-    quoted_etag = (
-        f'"profiles-{page.change_token}-{sort}-{direction}'
-        f'-{_profile_access_digest(request)}"'
-    )
+    access_digest = _profile_access_digest(request)
+    quoted_etag = f'"profiles-{page.change_token}-{sort}-{direction}-{access_digest}"'
     if if_none_match == quoted_etag:
         return Response(status_code=304, headers={"ETag": quoted_etag})
     response.headers["ETag"] = quoted_etag
