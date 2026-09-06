@@ -1480,7 +1480,7 @@ def test_enterprise_ai_direct_receives_published_markdown_in_context() -> None:
     fake_client = _FakeEnterpriseAiClient(
         '{"sql":"SELECT TOTAL_AMOUNT FROM INVOICES","explanation":"請求金額"}'
     )
-    service._enterprise_ai_client = fake_client  # type: ignore[assignment]  # noqa: SLF001
+    service._enterprise_ai_client = fake_client  # noqa: SLF001
     profile = service.get_profile("sql_assist_sample")
     allowed = service.resolve_allowed_objects(profile.id, AllowedObjects())
     published_markdown = "# 請求オントロジー\n\n- 請求金額は INVOICES.TOTAL_AMOUNT。"
