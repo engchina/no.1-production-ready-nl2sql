@@ -1200,6 +1200,7 @@ def test_job_published_ontology_unavailable_returns_none(
     service = Nl2SqlService(store=MemoryNl2SqlStore())
     _import_sample_with_profile(service)
     profile = service.get_profile("sql_assist_sample")
+
     def fail_markdown_resolution(_profile_id: str) -> None:
         raise RuntimeError("ontology is unavailable")
 
@@ -1348,9 +1349,7 @@ def test_job_applies_ontology_context_when_available(
     assert job.status == JobStatus.DONE
     assert job.result is not None
     assert job.result.engine_meta["ontology_context_applied"] is True
-    assert job.result.engine_meta["ontology_context_instruction_length"] == len(
-        published_markdown
-    )
+    assert job.result.engine_meta["ontology_context_instruction_length"] == len(published_markdown)
 
 
 def test_select_ai_showprompt_uses_ontology_attributes(
@@ -1470,8 +1469,7 @@ def test_select_ai_agent_receives_published_markdown_in_user_prompt() -> None:
 
     assert generated.engine == Nl2SqlEngine.SELECT_AI_AGENT
     assert adapter.questions == [
-        "請求金額を確認したい\n\n確認済み Ontology コンテキスト:\n\n"
-        + published_markdown
+        "請求金額を確認したい\n\n確認済み Ontology コンテキスト:\n\n" + published_markdown
     ]
     assert "question_effective:" not in adapter.questions[0]
 
