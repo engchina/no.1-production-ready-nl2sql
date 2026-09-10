@@ -98,24 +98,6 @@ async function expectButtonsSameHeight(primary: Locator, secondary: Locator) {
     .toBeLessThanOrEqual(1);
 }
 
-async function expectOneLineWithoutOverflow(locator: Locator) {
-  await expect(locator).toBeVisible();
-  const metrics = await locator.evaluate((node) => {
-    const element = node as HTMLElement;
-    const style = window.getComputedStyle(element);
-    return {
-      clientWidth: element.clientWidth,
-      lineHeight: Number.parseFloat(style.lineHeight),
-      offsetHeight: element.offsetHeight,
-      scrollWidth: element.scrollWidth,
-      whiteSpace: style.whiteSpace,
-    };
-  });
-  expect(metrics.whiteSpace).toBe("nowrap");
-  expect(metrics.offsetHeight).toBeLessThanOrEqual(metrics.lineHeight + 1);
-  expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
-}
-
 async function expectEqualFilterWidths(search: Locator, owner: Locator) {
   await expect
     .poll(async () => {
