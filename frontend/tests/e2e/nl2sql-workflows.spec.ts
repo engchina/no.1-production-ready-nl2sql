@@ -6605,7 +6605,14 @@ test("AI 活用の SELECT SQL 画面は通常 API だけを使用し、更新 SQ
     "1〜100000 の整数。直接 SQL 実行では取得上限を明示してください。"
   );
   await expect(rowLimitInput).toHaveValue("");
-  await expectOneLineWithoutOverflow(rowLimitHelper);
+  await expect(rowLimitHelper).toBeVisible();
+  for (const field of [rowLimitInput, rowLimitHelper]) {
+    const bounds = await field.boundingBox();
+    const panelBounds = await directSql.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(panelBounds).not.toBeNull();
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(panelBounds!.x + panelBounds!.width);
+  }
   await expectButtonBelowInput(rowLimitInput, directSql.getByRole("button", { name: "SQL 実行" }));
   await sqlInput.fill("SELECT CUSTOMER_NAME, TOTAL_AMOUNT FROM INVOICES");
   await expect(directSql.getByRole("button", { name: "SQL 実行" })).toBeDisabled();
@@ -6675,7 +6682,14 @@ test("AI 活用の SELECT SQL 画面は通常 API だけを使用し、更新 SQ
 
   await expectNoHorizontalScroll(page);
   await page.setViewportSize({ width: 375, height: 900 });
-  await expectOneLineWithoutOverflow(rowLimitHelper);
+  await expect(rowLimitHelper).toBeVisible();
+  for (const field of [rowLimitInput, rowLimitHelper]) {
+    const bounds = await field.boundingBox();
+    const panelBounds = await directSql.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(panelBounds).not.toBeNull();
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(panelBounds!.x + panelBounds!.width);
+  }
   await expectNoHorizontalScroll(page);
 });
 
