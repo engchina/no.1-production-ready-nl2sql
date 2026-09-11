@@ -991,6 +991,9 @@ test("AI オントロジー構築の実行 → 進捗 → Markdown 下書き編�
   await expect(sourceFileList.getByText("terms.csv", { exact: true })).toBeVisible();
   await expect(section.getByText("選択済み: qa_cases.csv")).toBeVisible();
   await expect(qaClear).toBeEnabled();
+  await expectButtonLabelFits(qaClear);
+  await qaClear.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("qa-file-deselect.png") });
   await qaClear.click();
   await expect(section.getByText("選択済み: qa_cases.csv")).toHaveCount(0);
   await expect(qaClear).toBeDisabled();

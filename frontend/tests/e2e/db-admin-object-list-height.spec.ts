@@ -2444,6 +2444,12 @@ test("Excel/CSV 取込フォームは取込方法を表示せずファイル選�
   expect(fillsAvailableWidth).toBe(true);
   expect(filePickerBox!.height).toBeGreaterThanOrEqual(44);
   expect(clearButtonBox!.height).toBeGreaterThanOrEqual(44);
+  if ((page.viewportSize()?.width ?? 0) < 640) {
+    expect(clearButtonBox!.y).toBeGreaterThanOrEqual(filePickerBox!.y + filePickerBox!.height + 8);
+    expect(filePickerBox!.width).toBeGreaterThanOrEqual(fileFieldBox!.width - 1);
+  } else {
+    expect(clearButtonBox!.x).toBeGreaterThanOrEqual(filePickerBox!.x + filePickerBox!.width + 8);
+  }
   await expectNoHorizontalScroll(page);
 });
 

@@ -2475,7 +2475,7 @@ test("手動更新の失敗通知はクエリ再描画で消えない", async ({
   await expect(notice).toBeVisible();
 });
 
-test("保存が成功したら実行確認語をクリアして保存ボタンを再ゲートする", async ({ page }) => {
+test("保存が成功したら実行確認語をクリアして保存ボタンを再ゲートする", async ({ page }, testInfo) => {
   await mockProfileApi(page);
 
   await page.goto("/profiles?profile=default");
@@ -2497,10 +2497,14 @@ test("保存が成功したら実行確認語をクリアして保存ボタン�
   const rebuild = page.getByRole("checkbox", { name: "保存時に Select AI Agent アセット(tool / agent / task / team)も再構築する" });
   await rebuild.check();
   await expect(clearButton).toHaveText("実行設定・同期表示をリセット");
+  await expect(page.getByLabel("名称")).toHaveValue("SALES_PROFILE");
+  await clearButton.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("profile-execution-reset.png") });
+  await expectNoDocumentHorizontalOverflow(page);
   await clearButton.press("Enter");
   await expect(confirmationField).toHaveValue("");
   await expect(rebuild).not.toBeChecked();
-  await expect(page.getByLabel("名称")).toHaveValue("sales_profile");
+  await expect(page.getByLabel("名称")).toHaveValue("SALES_PROFILE");
   await expect(page.getByLabel("カテゴリ")).toHaveValue("finance");
   await expect(saveButton).toBeDisabled();
   await expect(clearButton).toBeDisabled();
