@@ -2534,6 +2534,7 @@ test("失効したProfile URLでは別Profileの情報を取得せず明示選�
   expect(state.ontologyViewCalls).toBe(0);
   await page.screenshot({ path: testInfo.outputPath("ontology-missing-profile.png") });
   await page.getByTestId("ontology-build-profile-select").selectOption("default");
+  await expect(fetch).toBeEnabled();
   await fetch.press("Enter");
   await expect(page.getByTestId("profile-ontology-build")).toBeVisible();
   expect(state.profileDetailCalls).toEqual(["default"]);
