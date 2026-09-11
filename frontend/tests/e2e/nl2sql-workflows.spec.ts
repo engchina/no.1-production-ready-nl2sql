@@ -15261,7 +15261,7 @@ for (const questionFailed of [false, true]) {
     await expect(page.getByText(/論理構造が編集されています/)).toBeVisible();
     await page.getByRole("button", { name: "論理構造から SQL を生成" }).press("Enter");
     await expect.poll(() => payload?.logical_structure).toBe(edited);
-    expect(payload?.use_glossary).toBe(false);
+    await expect.poll(() => payload?.use_glossary).toBe(false);
     await page.reload();
     await expect(editor).toHaveValue(edited);
   });
