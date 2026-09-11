@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import math
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -670,7 +671,8 @@ class ProfileOntologyCapabilityService(ProfileOntologyWorkspaceService):
             f"{quote_identifier(plan['columns'][name])} = :k{i}"
             for i, name in enumerate(plan["keys"])
         )
-        sql = f"SELECT {fields} FROM {plan['table']} WHERE {predicates}"  # nosec B608 - Profile 検証済み識別子のみ、値は bind
+        # Profile の検証済み識別子を quote し、対象値は bind に分離する。
+        sql = f"SELECT {fields} FROM {plan['table']} WHERE {predicates}"  # nosec B608
         cursor.execute(
             sql + (" FOR UPDATE WAIT 5" if lock else ""),
             {f"k{i}": target[name] for i, name in enumerate(plan["keys"])},
@@ -873,7 +875,10 @@ class ProfileOntologyCapabilityService(ProfileOntologyWorkspaceService):
                             profile_id, identity, "ontology_action_execution", who, request_hash
                         )
                 except Exception:
-                    pass  # 再接続も失敗した場合、結果未確定として保持する。
+                    logging.getLogger(__name__).warning(
+                        "ontology_action_outcome_check_failed",
+                        extra={"execution_id": identity, "profile_id": profile_id},
+                    )
             # 失敗監査は rollback 後の別 record。成功 record と同一扱いにしない。
             self.store.save_artifact(
                 self.artifact(
