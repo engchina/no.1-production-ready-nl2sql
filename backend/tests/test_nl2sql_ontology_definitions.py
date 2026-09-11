@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -26,7 +27,7 @@ from app.features.nl2sql.ontology_store import InMemoryOntologyStore
 from app.features.nl2sql.structured_outputs import response_format
 
 
-def definition_payload():
+def definition_payload() -> list[dict[str, Any]]:
     return [
         {
             "kind": "object_type",
@@ -61,12 +62,12 @@ def definition_payload():
     ]
 
 
-def runtime():
+def runtime() -> tuple[OntologyApiRuntime, _FakeLegacyNl2SqlService]:
     legacy = _FakeLegacyNl2SqlService()
     return OntologyApiRuntime(legacy_service=legacy, store=InMemoryOntologyStore()), legacy
 
 
-def test_full_concepts_flow_through_real_build_worker():
+def test_full_concepts_flow_through_real_build_worker() -> None:
     rt, legacy = runtime()
     legacy._enterprise_ai_client = _FakeEnterpriseAiClient(
         json.dumps({"definitions": definition_payload()})
@@ -86,13 +87,13 @@ def test_full_concepts_flow_through_real_build_worker():
     assert job.draft_revision_id  # 旧成果物も生成する
 
 
-def test_profile_identity_and_artifact_access_are_isolated():
+def test_profile_identity_and_artifact_access_are_isolated(monkeypatch: pytest.MonkeyPatch) -> None:
     rt, legacy = runtime()
     profiles = {
         name: legacy.profile.model_copy(update={"id": name}) for name in ("sales", "support")
     }
-    rt.ensure_profile = lambda profile_id: profiles[profile_id]
-    rt._strict_profile = lambda profile_id: profiles[profile_id]
+    monkeypatch.setattr(rt, "ensure_profile", lambda profile_id: profiles[profile_id])
+    monkeypatch.setattr(rt, "_strict_profile", lambda profile_id: profiles[profile_id])
     service = ProfileOntologyDefinitionService(rt)
     bundles = [
         service.save_build(
@@ -111,7 +112,7 @@ def test_profile_identity_and_artifact_access_are_isolated():
         service.get("support", bundles[0].id)
 
 
-def test_rebuild_retains_stable_identity_and_reports_conflict():
+def test_rebuild_retains_stable_identity_and_reports_conflict() -> None:
     rt, _ = runtime()
     service = ProfileOntologyDefinitionService(rt)
     first = service.save_build(
@@ -145,16 +146,18 @@ def test_rebuild_retains_stable_identity_and_reports_conflict():
     assert second.parent_id == first.id
 
 
-def test_model_forbids_arbitrary_executable_code_and_unknown_fields():
+def test_model_forbids_arbitrary_executable_code_and_unknown_fields() -> None:
     with pytest.raises(ValidationError):
-        FunctionDefinition(api_name="bad", name_ja="不正", python_code="print(1)")
+        FunctionDefinition.model_validate(
+            {"api_name": "bad", "name_ja": "不正", "python_code": "print(1)"}
+        )
     with pytest.raises(ValidationError):
         parse_extraction(
             json.dumps({"definitions": [{"kind": "unknown", "api_name": "x", "name_ja": "不明"}]})
         )
 
 
-def test_structured_output_wire_schema_supports_all_concepts():
+def test_structured_output_wire_schema_supports_all_concepts() -> None:
     schema = response_format(OntologyBuildExtraction)["schema"]
     assert "definitions" in schema["properties"]
     assert all(
