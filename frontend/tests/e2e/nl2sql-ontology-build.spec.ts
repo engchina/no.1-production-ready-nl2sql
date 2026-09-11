@@ -2812,7 +2812,7 @@ test("公開能力を明示的に設定し、プレビュー確認・実行・�
 
 test("公開能力の空・読込・取得失敗を表示し再試行できる", async ({ page }) => {
   await mockApi(page);
-  await page.route("**/api/nl2sql/profiles/*/ontology-results", route => fulfillJson(route, { results: [typedBundle("default")] }));
+  await page.route("**/api/nl2sql/profiles/*/ontology-results", route => fulfillJson(route, { results: [] }));
   let mode = "loading";
   const gate = createRequestGate();
   await page.route("**/api/nl2sql/profiles/default/ontology-capabilities", async route => { if (mode === "loading") await gate.promise; if (mode === "error") return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "fixture unavailable" }) }); return fulfillJson(route, { release_id: "", capabilities: [], implementations: { functions: [], actions: [] } }); });
@@ -2825,6 +2825,8 @@ test("公開能力の空・読込・取得失敗を表示し再試行できる",
   await expect(region.getByRole("alert")).toBeVisible();
   mode = "empty"; await region.getByRole("button", { name: "最新情報を取得", exact: true }).click();
   await expect(region.getByRole("alert")).toHaveCount(0);
+  await region.getByRole("button", {name:"レビュー・公開を確認",exact:true}).click();
+  await expect(page.getByTestId("ontology-typed-results")).toBeFocused();
 });
 
 test("公開関数の型付き入力で呼出し、過去結果を保持して再実行は確認する", async ({ page }) => {

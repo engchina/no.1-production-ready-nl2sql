@@ -168,7 +168,12 @@ export function ProfileOntologyResults({
     onTypedResult?.(!!query.data?.results[0]?.definitions.length);
   }, [query.data, onTypedResult]);
   return (
-    <div data-testid="ontology-typed-results" className="min-w-0">
+    <div
+      id={`ontology-results-start-${profileId}`}
+      tabIndex={-1}
+      data-testid="ontology-typed-results"
+      className="min-w-0"
+    >
       <DbObjectManagementPanelShell
         id={`ontology-results-${profileId}`}
         idPrefix="ontology-results"

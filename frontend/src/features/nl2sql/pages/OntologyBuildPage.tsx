@@ -376,7 +376,15 @@ export function OntologyBuildPage() {
               onRefreshSchema={refreshSchema}
               refreshingSchema={refreshing}
             />
-            <OntologyCapabilities onOpenResults={tab => setResultRequest({tab,sequence:Date.now()})} key={selectedProfileId} profileId={selectedProfileId} profileLabel={selectedProfileSummary ? profileDisplayLabel(selectedProfileSummary) : ""} />
+            <OntologyCapabilities
+              key={selectedProfileId}
+              profileId={selectedProfileId}
+              profileLabel={selectedProfileSummary ? profileDisplayLabel(selectedProfileSummary) : ""}
+              onOpenResults={tab => {
+                document.getElementById(`ontology-results-start-${selectedProfileId}`)?.focus();
+                setResultRequest({tab, sequence: Date.now()});
+              }}
+            />
             <OntologyQueryPlayground
               graph={ontologyGraph}
               profileId={selectedProfileId}
