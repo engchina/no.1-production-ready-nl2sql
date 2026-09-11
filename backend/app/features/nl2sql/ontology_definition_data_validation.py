@@ -87,8 +87,9 @@ def check_data(
             f"{quote_identifier(p.mappings[0].column_name)} AS {quote_identifier(p.id)}"
             for p in mapped
         )
+        # Profile 内で解決した識別子は二重引用符で escape。行数は Pydantic の範囲付き整数。
         sql = (
-            f"SELECT {columns} FROM {quote_identifier(mapping.owner)}."
+            f"SELECT {columns} FROM {quote_identifier(mapping.owner)}."  # nosec B608
             f"{quote_identifier(mapping.object_name)} FETCH FIRST {request.sample_limit} ROWS ONLY"
         )
         result = adapter.execute_select(sql, request.sample_limit)
