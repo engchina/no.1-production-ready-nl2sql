@@ -14,8 +14,9 @@ import {
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/StateViews";
 import { FieldError } from "@/components/ui/field-error";
-import { Banner, EmptyState, ErrorState, toast } from "@engchina/production-ready-ui";
+import { Banner, EmptyState, toast } from "@engchina/production-ready-ui";
 
 import { BulkSelectionActions } from "@/components/BulkSelectionActions";
 import { isInteractiveRowTarget } from "@/components/MasterDetailDataTable";
