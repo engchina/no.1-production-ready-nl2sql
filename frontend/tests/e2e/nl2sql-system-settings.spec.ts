@@ -2822,6 +2822,7 @@ test("レビュー補完: システム設定6画面の表示とキーボード�
 });
 
 // 各主要導線の最終状態で全テキスト・入力欄の字体継承を確認する。
-test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === "skipped") return;
   await expectLocalUiFonts(page);
 });

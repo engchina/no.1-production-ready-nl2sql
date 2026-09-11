@@ -718,6 +718,7 @@ test("履歴の更新失敗後も続きが読めて条件変更では旧 cursor 
 });
 
 // 各主要導線の最終状態で全テキスト・入力欄の字体継承を確認する。
-test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === "skipped") return;
   await expectLocalUiFonts(page);
 });
