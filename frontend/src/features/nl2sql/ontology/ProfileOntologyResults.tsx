@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { FormStatus } from "@/components/ui/form-status";
 import { apiGet } from "@/lib/api";
 import { t } from "@/lib/i18n";
 
@@ -69,7 +70,7 @@ export function ProfileOntologyResults({ profileId, buildId }: { profileId: stri
       <Button variant="secondary" size="sm" onClick={() => void query.refetch()} disabled={query.isFetching}>{t("ontologyResults.refresh")}</Button>
     </div>
     {query.isPending ? <p role="status">{t("ontologyResults.loading")}</p> : null}
-    {query.isError ? <p role="alert" className="text-danger">{t("ontologyResults.error")}</p> : null}
+    {query.isError ? <FormStatus tone="danger" message={t("ontologyResults.error")} /> : null}
     {!query.isPending && !query.isError && !bundle ? <p>{t("ontologyResults.empty")}</p> : null}
     {bundle ? <>
       <p className="text-sm text-muted">{t(`ontologyResults.status.${bundle.status}`)} · {new Date(bundle.created_at).toLocaleString("ja-JP")}</p>
