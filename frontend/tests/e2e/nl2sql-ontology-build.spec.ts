@@ -1076,7 +1076,7 @@ test("AI オントロジー構築の実行 → 進捗 → Markdown 下書き編�
   ).toBeVisible();
   await expect.poll(() => state.ontologyViewCalls).toBe(1);
   await expect(ontologyQueryPanel.getByTestId("ontology-playground-version")).toHaveText(
-    "公開済みバージョン: v1"
+    "公開済みバージョン: v3"
   );
   const graphExpandButton = ontologyQueryPanel.getByRole("button", { name: "グラフを表示" });
   if (await graphExpandButton.isVisible()) {
