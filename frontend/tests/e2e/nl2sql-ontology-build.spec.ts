@@ -904,10 +904,10 @@ test("AI オントロジー構築の実行 → 進捗 → Markdown 下書き編�
     .fill("受注は顧客に紐づく。売上は受注金額の合計。");
   const sourceClear = page
     .getByTestId("ontology-build-source-files")
-    .getByRole("button", { name: "クリア" });
+    .getByRole("button", { name: "ファイル選択を解除" });
   const qaClear = page
     .getByTestId("ontology-build-qa-file")
-    .getByRole("button", { name: "クリア" });
+    .getByRole("button", { name: "ファイル選択を解除" });
   await expect(sourceClear).toBeDisabled();
   await expect(qaClear).toBeDisabled();
   await dropFiles(
