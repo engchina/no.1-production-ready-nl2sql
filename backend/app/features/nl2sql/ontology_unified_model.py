@@ -434,9 +434,13 @@ def _join_conditions(sql: str, physical: dict[str, OntologyNode]) -> list[JoinCo
             physical.get(".".join(p.name for p in col.parts).upper())
             for col in (part.this, part.expression)
         ]
-        if all(n and n.kind.value == "column" for n in pair):
-            left, right = pair
-            assert left is not None and right is not None
+        left, right = pair
+        if (
+            left is not None
+            and right is not None
+            and left.kind.value == "column"
+            and right.kind.value == "column"
+        ):
             result.append(
                 JoinCondition(
                     left=left.physical_mappings[0].column_refs[0],
