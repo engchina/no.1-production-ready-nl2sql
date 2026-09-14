@@ -3358,7 +3358,7 @@ async def test_lifespan_interrupts_build_jobs_off_loop_before_closing_pools(
         assert threading.get_ident() != loop_thread
         calls.append("build_shutdown")
 
-    monkeypatch.setattr(main.ontology_build_service, "shutdown", shutdown)
+    monkeypatch.setattr("app.main.ontology_build_service.shutdown", shutdown)
     monkeypatch.setattr(main, "close_oracle_pools", lambda: calls.append("close_pools"))
     async with main.lifespan(FastAPI()):
         assert calls == []

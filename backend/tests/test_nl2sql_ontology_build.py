@@ -2833,9 +2833,12 @@ def test_shutdown_interrupts_owned_job_and_late_worker_cannot_revive_it(
         reader = OntologyBuildService(runtime)
         assert reader.get(job.id) is not None
         reader.shutdown()
-        assert store.get_document("jobs", {"job_id": job.id})["status"] == "running"
+        record = store.get_document("jobs", {"job_id": job.id})
+        assert record is not None
+        assert record["status"] == "running"
         service.shutdown()
         record = store.get_document("jobs", {"job_id": job.id})
+        assert record is not None
         assert record["status"] == "cancelled"
         assert record["payload"]["error_code"] == "ONTOLOGY_BUILD_PROCESS_STOPPED"
         assert record["payload"]["finished_at"]
@@ -2847,7 +2850,9 @@ def test_shutdown_interrupts_owned_job_and_late_worker_cannot_revive_it(
     finally:
         release.set()
         assert finished.wait(5)
-    assert store.get_document("jobs", {"job_id": job.id})["status"] == "cancelled"
+    record = store.get_document("jobs", {"job_id": job.id})
+    assert record is not None
+    assert record["status"] == "cancelled"
 
 
 def test_shutdown_keeps_external_job_and_finished_job(
@@ -2859,11 +2864,15 @@ def test_shutdown_keeps_external_job_and_finished_job(
     service = OntologyBuildService(runtime)
     job = service.start("sales")
     service.shutdown()
-    assert store.get_document("jobs", {"job_id": job.id})["status"] == "queued"
+    record = store.get_document("jobs", {"job_id": job.id})
+    assert record is not None
+    assert record["status"] == "queued"
     service._update(job.id, lambda item: setattr(item, "status", OntologyBuildStatus.SUCCEEDED))
     service._inprocess_jobs.add(job.id)
     service.shutdown()
-    assert store.get_document("jobs", {"job_id": job.id})["status"] == "succeeded"
+    record = store.get_document("jobs", {"job_id": job.id})
+    assert record is not None
+    assert record["status"] == "succeeded"
 
 
 def test_shutdown_retries_concurrent_progress_write(
@@ -2888,7 +2897,9 @@ def test_shutdown_retries_concurrent_progress_write(
     monkeypatch.setattr(service, "_save_cancelled", conflict_once)
     service.shutdown()
     assert calls == 2
-    assert store.get_document("jobs", {"job_id": job.id})["status"] == "cancelled"
+    record = store.get_document("jobs", {"job_id": job.id})
+    assert record is not None
+    assert record["status"] == "cancelled"
 
 
 def test_restored_inprocess_job_refreshes_after_independent_worker_completes(
@@ -2901,9 +2912,14 @@ def test_restored_inprocess_job_refreshes_after_independent_worker_completes(
     job = writer.start("sales")
     monkeypatch.setattr(get_settings(), "nl2sql_ontology_worker_mode", "inprocess")
     reader = OntologyBuildService(runtime)
-    assert reader.get(job.id).status == OntologyBuildStatus.QUEUED
+    snapshot = reader.get(job.id)
+    assert snapshot is not None
+    assert snapshot.status == OntologyBuildStatus.QUEUED
     record = store.get_document("jobs", {"job_id": job.id})
+    assert record is not None
     record["status"] = "succeeded"
     record["payload"]["status"] = "succeeded"
     store.save_document("jobs", record, expected_etag=record["etag"])
-    assert reader.get(job.id).status == OntologyBuildStatus.SUCCEEDED
+    snapshot = reader.get(job.id)
+    assert snapshot is not None
+    assert snapshot.status == OntologyBuildStatus.SUCCEEDED
