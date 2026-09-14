@@ -741,7 +741,7 @@ def test_synthetic_connection_retries_only_establishment_timeouts(
         driver.connect.side_effect = timeout
     monkeypatch.setattr(adapter, "_load_oracledb", lambda: driver)
     monkeypatch.setattr(adapter, "_init_client", lambda _: None)
-    monkeypatch.setattr(oracle.time, "sleep", Mock())
+    monkeypatch.setattr("app.features.nl2sql.oracle_adapter.time.sleep", Mock())
     if case == "recover":
         with adapter.connection() as result:
             assert result is conn
