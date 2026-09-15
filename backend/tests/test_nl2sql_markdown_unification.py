@@ -728,4 +728,6 @@ def test_content_notes_can_be_published_as_context_without_losing_definitions() 
         None,
     )
     assert rt.ontology_markdown_state("sales").published_markdown == markdown
-    assert len(svc.snapshot("sales")["definitions"]) == len(parser.definitions)
+    snapshot = svc.snapshot("sales")
+    assert snapshot is not None
+    assert len(snapshot["definitions"]) == len(parser.definitions)
